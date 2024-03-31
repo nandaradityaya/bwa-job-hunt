@@ -5,36 +5,42 @@ import { filterFormType } from "@/types";
 import { Button } from "@/components/ui/button";
 
 interface FormFilterDynamicProps {
-	formFilter: any;
-	onSubmitFilter: (val: any) => Promise<void>;
-	filterForms: filterFormType[];
+  formFilter: any;
+  onSubmitFilter: (val: any) => Promise<void>;
+  filterForms: filterFormType[];
 }
 
 const FormFilterDynamic: FC<FormFilterDynamicProps> = ({
-	filterForms,
-	formFilter,
-	onSubmitFilter,
+  filterForms,
+  formFilter,
+  onSubmitFilter,
 }) => {
-	return (
-		<Form {...formFilter}>
-			<form onSubmit={formFilter.handleSubmit(onSubmitFilter)}>
-				{filterForms.map((item: filterFormType, i: number) => (
-					<CheckboxForms
-						key={i}
-						formFilter={formFilter}
-						items={item.items}
-						label={item.label}
-						name={item.name}
-					/>
-				))}
+  return (
+    <Form {...formFilter}>
+      <form onSubmit={formFilter.handleSubmit(onSubmitFilter)}>
+        {filterForms.map((item: filterFormType, i: number) => (
+          <CheckboxForms
+            key={i}
+            formFilter={formFilter}
+            items={item.items}
+            label={item.label}
+            name={item.name}
+          />
+        ))}
+        {/* <CheckboxForms
+          formFilter={formFilter}
+          items={items}
+          label="Categories"
+          name="categories"
+        /> */}
 
-				<Button className="mt-5 w-full">Apply Filter</Button>
-				<Button variant="outline" className="mt-3 w-full">
-					Reset Filter
-				</Button>
-			</form>
-		</Form>
-	);
+        <Button className="mt-5 w-full">Apply Filter</Button>
+        <Button variant="outline" className="mt-3 w-full">
+          Reset Filter
+        </Button>
+      </form>
+    </Form>
+  );
 };
 
 export default FormFilterDynamic;
