@@ -62,17 +62,13 @@ const ExploreDataContainer: FC<ExploreDataContainerProps> = ({
           />
         </div>
         <div className="w-4/5">
-          {/* <div className="mb-8">
+          <div className="mb-8">
             <div className="text-3xl font-semibold">
               All {type === "job" ? "Jobs" : "Companies"}
             </div>
             <div className="text-muted-foreground">
               Showing {data.length} Result
             </div>
-          </div> */}
-          <div className="mb-8">
-            <div className="text-3xl font-semibold">All Jobs</div>
-            <div className="text-muted-foreground">Showing 73 Result</div>
           </div>
 
           <div className="">
