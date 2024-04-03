@@ -29,11 +29,11 @@ const LatestJobs: FC<LatestJobsProps> = ({}) => {
             jobType="Full Time"
             desc="Description"
             id={""}
-            category={{
-              id: "",
-              name: "",
-              totalJobs: 0,
-            }}
+            // category={{
+            //   id: "",
+            //   name: "",
+            //   totalJobs: 0,
+            // }}
             needs={0}
             applicants={0}
             skills={["Marketing", "Design"]}
