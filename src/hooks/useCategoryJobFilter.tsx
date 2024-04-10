@@ -4,26 +4,34 @@ import { useMemo } from "react";
 import useSWR from "swr";
 
 const useCategoryJobFilter = () => {
-	const { data, error, isLoading } = useSWR("/api/jobs/categories", fetcher);
+  const { data, error, isLoading } = useSWR("/api/jobs/categories", fetcher);
 
-	const categories = useMemo(
-		() => parsingCategoriesToOptions(data, isLoading, error),
-		[data, error, isLoading]
-	);
+  console.log("data");
+  console.log(data);
 
-	const filters = useMemo(() => {
-		return [
-			{
-				name: "categories",
-				label: "Categories",
-				items: categories,
-			},
-		] as filterFormType[];
-	}, [categories]);
+  // pake useMemo agar tidak di render berulang2, jadi di render ketika data, isLoading, & errornya berubah
+  const categories = useMemo(
+    () => parsingCategoriesToOptions(data, isLoading, error),
+    [data, error, isLoading]
+  );
 
-	return {
-		filters,
-	};
+  // clg ini sudah di parsing jadi datanya cuma id & label
+  // console.log("categories");
+  // console.log(categories);
+
+  const filters = useMemo(() => {
+    return [
+      {
+        name: "categories", // namenya sesuaiin dengan formFilterSchema yg ada di form-schema.ts
+        label: "Categories",
+        items: categories,
+      },
+    ] as filterFormType[];
+  }, [categories]);
+
+  return {
+    filters,
+  };
 };
 
 export default useCategoryJobFilter;
