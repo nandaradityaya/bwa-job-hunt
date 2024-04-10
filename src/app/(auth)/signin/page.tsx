@@ -16,7 +16,7 @@ import Link from "next/link";
 import React, { FC } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-// import { signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
@@ -31,23 +31,26 @@ const SignInPage: FC<SignInPageProps> = ({}) => {
 
   const router = useRouter();
 
-  //   const onSubmit = async (val: z.infer<typeof formSignInSchema>) => {
-  //     const authenticated = await signIn("credentials", {
-  //       ...val,
-  //       redirect: false,
-  //     });
+  const onSubmit = async (val: z.infer<typeof formSignInSchema>) => {
+    // fungsi signIn itu dari nextAuth | providernya credentials
+    const authenticated = await signIn("credentials", {
+      ...val,
+      redirect: false, // redirect bikin false
+    });
 
-  //     if (authenticated?.error) {
-  //       toast({
-  //         title: "Error",
-  //         description: "Email or password maybe wrong",
-  //       });
+    // console.log(authenticated);
 
-  //       return;
-  //     }
+    if (authenticated?.error) {
+      toast({
+        title: "Error",
+        description: "Email or password maybe wrong",
+      });
 
-  //     router.push("/");
-  //   };
+      return;
+    }
+
+    router.push("/");
+  };
 
   return (
     <div>
@@ -56,7 +59,7 @@ const SignInPage: FC<SignInPageProps> = ({}) => {
       </div>
 
       <Form {...form}>
-        <form className="space-y-5">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <FormField
             control={form.control}
             name="email"

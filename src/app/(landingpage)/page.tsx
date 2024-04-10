@@ -1,3 +1,4 @@
+"use client";
 import BannerSignUp from "@/components/organisms/BannerSignUp";
 import Category from "@/components/organisms/Category";
 import Clients from "@/components/organisms/Clients";
