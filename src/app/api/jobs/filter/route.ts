@@ -18,7 +18,7 @@ export async function GET(request: Request) {
       ? {
           CategoryJob: {
             id: {
-              in: filterCategory, // in bisa berupa array yg idnya di dalam data [id1, id2] (cek di prisma relation)
+              in: filterCategory, // in bisa berupa array yg idnya di dalam data [id1, id2] (cek di web prisma relation)
             },
           },
         }

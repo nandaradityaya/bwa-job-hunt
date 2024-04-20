@@ -7,67 +7,79 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { FC } from "react";
 import { BiCategory } from "react-icons/bi";
-// import prisma from "../../../../../../lib/prisma";
-// import { supabasePublicUrl } from "@/lib/supabase";
-// import { dateFormat } from "@/lib/utils";
-// import { getServerSession } from "next-auth";
-// import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import prisma from "../../../../../../lib/prisma";
+import { supabasePublicUrl } from "@/lib/supabase";
+import { dateFormat } from "@/lib/utils";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 async function getDetailJob(id: string) {
-  // const session = await getServerSession(authOptions);
-  // const data = await prisma.job.findFirst({
-  // 	where: {
-  // 		id,
-  // 	},
-  // 	include: {
-  // 		Company: {
-  // 			include: {
-  // 				Companyoverview: true,
-  // 			},
-  // 		},
-  // 		CategoryJob: true,
-  // 	},
-  // });
-  // let imageUrl;
-  // if (data?.Company?.Companyoverview[0].image) {
-  // 	imageUrl = await supabasePublicUrl(
-  // 		data.Company.Companyoverview[0].image,
-  // 		"company"
-  // 	);
-  // } else {
-  // 	imageUrl = "/images/company2.png";
-  // }
-  // const applicants = data?.applicants || 0;
-  // const needs = data?.needs || 0;
-  // const isApply = await prisma.applicant.count({
-  // 	where: {
-  // 		userId: session?.user.id,
-  // 	},
-  // });
-  // const benefits: any = data?.benefits;
-  // if (!session) {
-  // 	return {
-  // 		...data,
-  // 		image: imageUrl,
-  // 		benefits,
-  // 		applicants,
-  // 		needs,
-  // 		isApply: 0,
-  // 	};
-  // }
-  // return {
-  // 	...data,
-  // 	image: imageUrl,
-  // 	benefits,
-  // 	applicants,
-  // 	needs,
-  // 	isApply,
-  // };
+  const session = await getServerSession(authOptions); // ambil session
+  const data = await prisma.job.findFirst({
+    where: {
+      id,
+    },
+    // relasi
+    include: {
+      Company: {
+        include: {
+          Companyoverview: true,
+        },
+      },
+      CategoryJob: true,
+    },
+  });
+  let imageUrl;
+
+  // image url
+  if (data?.Company?.Companyoverview[0].image) {
+    imageUrl = await supabasePublicUrl(
+      data.Company.Companyoverview[0].image,
+      "company"
+    );
+  } else {
+    imageUrl = "/images/company2.png"; // jik image tidak ada gunakan public asset
+  }
+  const applicants = data?.applicants || 0;
+  const needs = data?.needs || 0;
+
+  // sudah apply atau belum
+  const isApply = await prisma.applicant.count({
+    where: {
+      userId: session?.user.id,
+    },
+  });
+  const benefits: any = data?.benefits;
+
+  // jika tidak ada session return ini
+  if (!session) {
+    return {
+      ...data,
+      image: imageUrl,
+      benefits,
+      applicants,
+      needs,
+      isApply: 0,
+    };
+  }
+
+  // jika sessionnya ada return ini
+  return {
+    ...data,
+    image: imageUrl,
+    benefits,
+    applicants,
+    needs,
+    isApply,
+  };
 }
 
 const DetailJobPage = async ({ params }: { params: { id: string } }) => {
+  // console.log(params.id); // clg muncul di terminal karna ini serverside
   const data = await getDetailJob(params.id);
-  // const session = await getServerSession(authOptions);
+  // console.log(data);
+
+  const session = await getServerSession(authOptions);
 
   return (
     <>
@@ -84,27 +96,21 @@ const DetailJobPage = async ({ params }: { params: { id: string } }) => {
             Companies
           </Link>{" "}
           /{" "}
-          {/* <Link
-						className="hover:underline hover:text-black"
-						href={`/detail/company/${data?.Company?.Companyoverview[0].id}`}
-					>
-						{data?.Company?.Companyoverview[0].name}
-					</Link>{" "} */}
           <Link
             className="hover:underline hover:text-black"
-            href={`/detail/company/1`}
+            href={`/detail/company/${data?.Company?.Companyoverview[0].id}`}
           >
-            Twitter
+            {data?.Company?.Companyoverview[0].name}
           </Link>{" "}
           /{" "}
           <Link
             className="hover:underline hover:text-black"
-            href={`/detail/job/1`}
+            href={`/detail/job/${data?.id}`}
           >
-            Social Media Assistant
+            {data.roles}
           </Link>
         </div>
-        {/* <div className="bg-white shadow mt-10 p-5 w-11/12 mx-auto flex flex-row justify-between items-center">
+        <div className="bg-white shadow mt-10 p-5 w-11/12 mx-auto flex flex-row justify-between items-center">
           <div className="inline-flex items-center gap-5">
             <Image src={data.image} alt={data.image} width={88} height={88} />
             <div>
@@ -116,6 +122,7 @@ const DetailJobPage = async ({ params }: { params: { id: string } }) => {
           </div>
           {session ? (
             <>
+              {/* jika isApply 1 yg artinya sudah apply maka buttonnya menjadi Applied */}
               {data.isApply === 1 ? (
                 <Button disabled className="text-lg px-12 py-6 bg-green-500">
                   Applied
@@ -135,35 +142,9 @@ const DetailJobPage = async ({ params }: { params: { id: string } }) => {
               Sign In First
             </Button>
           )}
-        </div> */}
-        <div className="bg-white shadow mt-10 p-5 w-11/12 mx-auto flex flex-row justify-between items-center">
-          <div className="inline-flex items-center gap-5">
-            <Image
-              src="/images/company2.png"
-              alt="/images/company2.png"
-              width={88}
-              height={88}
-            />
-            <div>
-              <div className="text-2xl font-semibold">
-                Social Media Assistant
-              </div>
-              <div className="text-muted-foreground">
-                Agency . Jakarta, Indonesia . Full-Time
-              </div>
-            </div>
-          </div>
-          {/* <Button disabled className="text-lg px-12 py-6 bg-green-500">
-            Applied
-          </Button> */}
-          <FormModalApply
-            image="/images/company2.png"
-            roles="Sosial Media Assistant"
-            location="Jakarta, Indonesia"
-          />
         </div>
       </div>
-      {/* <div className="px-32 py-16 flex flex-row items-start gap-10">
+      <div className="px-32 py-16 flex flex-row items-start gap-10">
         <div className="w-3/4">
           <div className="mb-16">
             <div className="text-3xl font-semibold mb-3">Description</div>
@@ -176,6 +157,7 @@ const DetailJobPage = async ({ params }: { params: { id: string } }) => {
           </div>
           <div className="mb-16">
             <div className="text-3xl font-semibold mb-3">Responsibilities</div>
+            {/* dangerouslySetInnerHTML untuk manggil data yang mempunya tag html agar ketika di parsing ke client tag htmlnya tidak ikut */}
             <div
               className="text-muted-foreground"
               dangerouslySetInnerHTML={{
@@ -266,109 +248,6 @@ const DetailJobPage = async ({ params }: { params: { id: string } }) => {
             </div>
           </div>
         </div>
-      </div> */}
-      <div className="px-32 py-16 flex flex-row items-start gap-10">
-        <div className="w-3/4">
-          <div className="mb-16">
-            <div className="text-3xl font-semibold mb-3">Description</div>
-            <div className="text-muted-foreground">
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut quam
-                neque error, autem libero enim quas sed vitae debitis minus ad
-                est! Officiis velit magni non nihil, ipsum quisquam accusantium!
-              </p>
-            </div>
-          </div>
-          <div className="mb-16">
-            <div className="text-3xl font-semibold mb-3">Responsibilities</div>
-            <div className="text-muted-foreground">
-              <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                Quisquam consectetur pariatur veniam rem alias repellendus
-                mollitia perferendis autem provident neque quaerat quidem
-                ratione, velit ea! Vero facere velit quas laudantium!
-              </p>
-            </div>
-          </div>
-
-          <div className="mb-16">
-            <div className="text-3xl font-semibold mb-3">Who You Are</div>
-            <div className="text-muted-foreground">
-              <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                Quisquam consectetur pariatur veniam rem alias repellendus
-                mollitia perferendis autem provident neque quaerat quidem
-                ratione, velit ea! Vero facere velit quas laudantium!
-              </p>
-            </div>
-          </div>
-
-          <div className="mb-16">
-            <div className="text-3xl font-semibold mb-3">Nice-To-Haves</div>
-            <div className="text-muted-foreground">
-              <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                Quisquam consectetur pariatur veniam rem alias repellendus
-                mollitia perferendis autem provident neque quaerat quidem
-                ratione, velit ea! Vero facere velit quas laudantium!
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="w-1/4">
-          <div>
-            <div className="text-3xl font-semibold">About this role</div>
-
-            <div className="mt-6 p-4 bg-slate-50">
-              <div className="mb-2">
-                <span className="font-semibold">7 Applied</span>{" "}
-                <span className="text-gray-600">of 10 capacity</span>
-              </div>
-              <Progress value={50} />
-            </div>
-
-            <div className="mt-6 space-y-4">
-              <div className="flex flex-row justify-between">
-                <div className="text-gray-500">Apply Before</div>
-                <div className="font-semibold">July 31, 2024</div>
-              </div>
-              <div className="flex flex-row justify-between">
-                <div className="text-gray-500">Job Posted On</div>
-                <div className="font-semibold">March 4, 2024</div>
-              </div>
-              <div className="flex flex-row justify-between">
-                <div className="text-gray-500">Job Type</div>
-                <div className="font-semibold">Full-Time</div>
-              </div>
-              <div className="flex flex-row justify-between">
-                <div className="text-gray-500">Salary</div>
-                <div className="font-semibold">$75k - $80k USD</div>
-              </div>
-            </div>
-          </div>
-
-          <Separator className="my-10" />
-
-          <div>
-            <div className="text-3xl font-semibold">Category</div>
-            <div className="my-10 inline-flex gap-4">
-              <Badge>Designer</Badge>
-            </div>
-          </div>
-
-          <Separator className="my-10" />
-
-          <div>
-            <div className="text-3xl font-semibold">Required Skills</div>
-            <div className="my-10 inline-flex gap-4">
-              {[0, 12].map((item: number) => (
-                <Badge variant="outline" key={item}>
-                  Figma
-                </Badge>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
 
       <div className="px-32 pb-16">
@@ -382,15 +261,12 @@ const DetailJobPage = async ({ params }: { params: { id: string } }) => {
         </div>
 
         <div className="grid grid-cols-5 gap-5">
-          {[0, 1, 2].map((item: number) => (
-            <div key={item}>
+          {data?.benefits?.map((item: any, i: number) => (
+            <div key={i}>
               <BiCategory className="w-12 h-12 text-primary" />
-              <div className="font-semibold text-xl mt-6">Full Healthcare</div>
+              <div className="font-semibold text-xl mt-6">{item.benefit}</div>
               <div className="mt-3 text-sm text-gray-500">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam
-                error at sint repellendus iusto aliquam consequatur, quis
-                officiis quam, mollitia ducimus odio eaque perspiciatis, nisi
-                quas perferendis minus incidunt. Facere.
+                {item.description}
               </div>
             </div>
           ))}

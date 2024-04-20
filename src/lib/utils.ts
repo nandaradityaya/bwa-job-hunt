@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-// import dayjs from "dayjs";
+import dayjs from "dayjs";
 import bcrypt from "bcryptjs";
 import { CompanyType, JobType, categoryJobType, optionType } from "@/types";
 import { supabasePublicUrl } from "./supabase";
@@ -93,48 +93,48 @@ export const parsingJobs = async (
   return [];
 };
 
-// export const parsingCompanies = async (
-//   data: any,
-//   isLoading: boolean,
-//   error: any
-// ) => {
-//   if (!isLoading && !error && data) {
-//     return await Promise.all(
-//       data.map(async (item: any) => {
-//         let imageName = item.Companyoverview[0]?.image;
-//         let imageUrl;
+export const parsingCompanies = async (
+  data: any,
+  isLoading: boolean,
+  error: any
+) => {
+  if (!isLoading && !error && data) {
+    return await Promise.all(
+      data.map(async (item: any) => {
+        let imageName = item.Companyoverview[0]?.image;
+        let imageUrl;
 
-//         if (imageName) {
-//           imageUrl = await supabasePublicUrl(imageName, "company");
-//         } else {
-//           imageUrl = "/images/company.png";
-//         }
+        if (imageName) {
+          imageUrl = await supabasePublicUrl(imageName, "company");
+        } else {
+          imageUrl = "/images/company.png";
+        }
 
-//         const companyDetail = item.Companyoverview[0];
+        const companyDetail = item.Companyoverview[0];
 
-//         const company: CompanyType = {
-//           id: item.id,
-//           name: companyDetail?.name,
-//           image: imageUrl,
-//           dateFounded: companyDetail?.dateFounded,
-//           description: companyDetail?.description,
-//           employee: companyDetail?.employee,
-//           industry: companyDetail?.industry,
-//           location: companyDetail?.location,
-//           techStack: companyDetail?.techStack,
-//           website: companyDetail?.website,
-//           sosmed: item.CompanySocialMedia[0],
-//           teams: item?.CompanyTeam,
-//           totalJobs: item._count.Job,
-//         };
+        const company: CompanyType = {
+          id: item.id,
+          name: companyDetail?.name,
+          image: imageUrl,
+          dateFounded: companyDetail?.dateFounded,
+          description: companyDetail?.description,
+          employee: companyDetail?.employee,
+          industry: companyDetail?.industry,
+          location: companyDetail?.location,
+          techStack: companyDetail?.techStack,
+          website: companyDetail?.website,
+          sosmed: item.CompanySocialMedia[0],
+          teams: item?.CompanyTeam,
+          totalJobs: item._count.Job,
+        };
 
-//         return company;
-//       })
-//     );
-//   }
+        return company;
+      })
+    );
+  }
 
-//   return [];
-// };
+  return [];
+};
 
 // parsing karna butuhnya id dan label
 export const parsingCategoriesToOptions = (
@@ -146,7 +146,7 @@ export const parsingCategoriesToOptions = (
   if (!isLoading && !error && data) {
     return data.map((item: any) => {
       return {
-        id: isIndustry ? item.name : item.id,
+        id: isIndustry ? item.name : item.id, // cek jika isIndustrynya ada di companyOverview maka pake namenya, jika gada maka yaudah pake idnua
         label: item.name,
       } as optionType;
     }) as optionType[];
@@ -155,9 +155,9 @@ export const parsingCategoriesToOptions = (
   return [];
 };
 
-// export const dateFormat = (
-//   date: Date | string,
-//   format: string = "DD MMM YYYY"
-// ) => {
-//   return dayjs(date).format(format);
-// };
+export const dateFormat = (
+  date: Date | string,
+  format: string = "DD MMM YYYY"
+) => {
+  return dayjs(date).format(format);
+};

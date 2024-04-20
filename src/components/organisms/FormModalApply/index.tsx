@@ -20,17 +20,17 @@ import { FC } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import UploadField from "../UploadField";
-// import { useSession } from "next-auth/react";
-// import { supabaseUploadFile } from "@/lib/supabase";
+import { useSession } from "next-auth/react";
+import { supabaseUploadFile } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
 interface FormModalApplyProps {
-  image?: string | undefined;
-  roles?: string | undefined;
-  location?: string | undefined;
-  jobType?: string | undefined;
-  id?: string | undefined;
+  image: string | undefined;
+  roles: string | undefined;
+  location: string | undefined;
+  jobType: string | undefined;
+  id: string | undefined;
 }
 
 const FormModalApply: FC<FormModalApplyProps> = ({
@@ -47,50 +47,52 @@ const FormModalApply: FC<FormModalApplyProps> = ({
   const { toast } = useToast();
   const router = useRouter();
 
-  // const { data: session } = useSession();
+  const { data: session } = useSession();
 
   const onSubmit = async (val: z.infer<typeof formApplySchema>) => {
-    // try {
-    // 	const { filename, error } = await supabaseUploadFile(
-    // 		val.resume,
-    // 		"applicant"
-    // 	);
+    try {
+      const { filename, error } = await supabaseUploadFile(
+        val.resume, // ambil value resumenya
+        "applicant" // pilih bucketnya applicant
+      );
 
-    // 	const reqData = {
-    // 		userId: session?.user.id,
-    // 		jobId: id,
-    // 		resume: filename,
-    // 		coverLetter: val.coverLetter,
-    // 		linkedIn: val.linkedIn,
-    // 		phone: val.phone,
-    // 		portfolio: val.portfolio,
-    // 		previousJobTitle: val.previousJobTitle,
-    // 	};
+      // reqData sesuainya dengan field yg ada di DB applicant, karna semua data ini akan masuk ke dalam DB Applicant
+      const reqData = {
+        userId: session?.user.id,
+        jobId: id,
+        resume: filename,
+        coverLetter: val.coverLetter,
+        linkedIn: val.linkedIn,
+        phone: val.phone,
+        portfolio: val.portfolio,
+        previousJobTitle: val.previousJobTitle,
+      };
 
-    // 	if (error) {
-    // 		throw "Error";
-    // 	}
+      if (error) {
+        throw "Error";
+      }
 
-    // 	await fetch("/api/jobs/apply", {
-    // 		method: "POST",
-    // 		headers: { "Content-Type": "application/json" },
-    // 		body: JSON.stringify(reqData),
-    // 	});
+      // jika tidak error maka post ke route API ini
+      await fetch("/api/jobs/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reqData),
+      });
 
-    // 	await toast({
-    // 		title: "Success",
-    // 		description: "Apply job success",
-    // 	});
+      await toast({
+        title: "Success",
+        description: "Apply job success",
+      });
 
-    // 	router.replace("/");
-    // } catch (error) {
-    // 	console.log(error);
-    // 	toast({
-    // 		title: "Error",
-    // 		description: "Please try again",
-    // 	});
-    // }
-    console.log(val);
+      router.replace("/");
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Error",
+        description: "Please try again",
+      });
+    }
+    // console.log(val);
   };
 
   return (
