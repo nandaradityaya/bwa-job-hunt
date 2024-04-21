@@ -5,6 +5,7 @@ import Navbar from "@/components/layouts/Navbar";
 import Footer from "@/components/layouts/Footer";
 import { Toaster } from "@/components/ui/toaster";
 import AuthProvider from "@/providers/AuthProvider";
+import I18NextProvider from "@/providers/i18NextProvider";
 
 const epilogue = Epilogue({ subsets: ["latin"] });
 
@@ -21,12 +22,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${epilogue.className} relative overflow-x-hidden`}>
-        <AuthProvider>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-          <Toaster />
-        </AuthProvider>
+        <I18NextProvider>
+          <AuthProvider>
+            <Navbar />
+            <main>{children}</main>
+            <Footer />
+            <Toaster />
+          </AuthProvider>
+        </I18NextProvider>
       </body>
     </html>
   );

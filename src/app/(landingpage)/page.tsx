@@ -7,8 +7,11 @@ import Hero from "@/components/organisms/Hero";
 import LatestJobs from "@/components/organisms/LatestJobs";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useTranslation, initReactI18next } from "react-i18next";
 
 export default function Home() {
+  const { t } = useTranslation();
+
   return (
     <>
       <div className="absolute w-2/3 h-screen top-0 right-0 -z-10">
