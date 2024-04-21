@@ -189,6 +189,7 @@ const DetailCompanyPage: FC<DetailCompanyPageProps> = async ({ params }) => {
                   }}
                 ></div>
               </div>
+              {/* jika CompanySocialMedia ada maka munculin element di bawah */}
               {data.CompanySocialMedia && (
                 <div>
                   <div className="text-3xl font-semibold mb-4">Contact</div>
